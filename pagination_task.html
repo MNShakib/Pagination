@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style_pagination.css">
+    <title>Pagination</title>
+</head>
+
+<body>
+    <div id="h1">
+        <label for="count">Rows / Page &nbsp;</label>
+        <select name="count" id="sl" onchange="content_number(this)"></select>
+    </div>
+
+    <div class="center">
+        <div class="pagination" id="pago">
+        </div>
+    </div>
+
+    <script>
+        //Select Logic
+        var div0=document.getElementById('h1');
+        var sl=document.getElementById('sl');
+        for(let i=1;i<=100;i++){
+            var op=document.createElement("option");
+            op.value=i;
+            if(i==10){
+                op.selected=true;
+            }
+            op.innerHTML=`${i}`;
+            sl.append(op);
+        }
+        h1.append(sl);
+        var div = document.createElement('div');
+        div.setAttribute('class', 'hd');
+
+        var s=10,cc=0,cs=0;
+        var cnt=Math.ceil(100/ +s);
+        function content_number(num){
+            s=num.value;
+            update_pagination();
+            pagi(cs,cc);
+        }
+        var start1=0;
+
+        //Data Manipulation
+        var div1 = document.createElement('div');
+        div1.setAttribute('class', 'hdd');
+        div1.append(div);
+
+        function create_span(idd, nm, email) {
+            var span1 = document.createElement('span');
+            span1.innerHTML = `ID: ${idd}`;
+            var span2 = document.createElement('span');
+            span2.innerHTML = `NAME: ${nm}`;
+            var span3 = document.createElement('span');
+            span3.innerHTML = `EMAIL: ${email}`;
+            var lin = document.createElement('hr')
+            lin.setAttribute('class', 'hrr');
+            div.append(span1, span2, span3, lin);
+        }
+        var spid = document.getElementById('id');
+        var spname = document.getElementById('name');
+        var spemail = document.getElementById('email');
+        var id = [];
+        var name2 = [];
+        var email = [];
+        let request = new XMLHttpRequest;
+        request.open('GET', 'https://raw.githubusercontent.com/Rajavasanthan/jsondata/master/pagenation.json', true);
+        request.send();
+        request.onload = function () {
+            var data = JSON.parse(this.response);
+            let i = 0;
+            data.map(function (cv) {
+                id[i] = cv.id;
+                name2[i] = cv.name;
+                email[i] = cv.email;
+                i++;
+                if(i==10){
+                    update_pagination();
+                    pagi(0,1);
+                }
+            })
+        }
+        var p = 0,
+            n = 10,
+            pi=1,
+            ni=2;
+            pp="";
+        function pagi(current_value,ci='1') {
+            start1=ci*s;
+            cs=current_value;
+            current_value=(current_value == 0) ? 0 : start1-s;
+            ci=(ci==0)?(1):ci;
+            cc=ci;
+            let id1="bt"+ci;
+            let iat="bt"+pp;
+            var active1=document.getElementById(id1);
+            var inactive1=document.getElementById(iat);
+            if(pp!=''&&pp!=ci&&inactive1!=null){
+                inactive1.setAttribute('class','');
+
+            }
+            active1.setAttribute('class','active');
+            pp=ci;
+            ni=(ci==cnt)?(cnt):(ci+1);
+            pi=(ci==1)?(1):(ci-1);
+            p = (current_value == 0) ? 0 : current_value - 10;
+            n = (current_value == 90) ? 90 : current_value + 10;
+            div.innerHTML = ``;
+            let l=(current_value + +s>100)?100:current_value+ +s;
+            for (let i = current_value; i < l; i++) {
+                create_span(id[i], name2[i], email[i]);
+            }
+            document.body.append(div1,div0);
+        }
+
+        //Pagination Logic
+        createATag=(className,hrefLink,idName,clkFun,text)=>{
+            let aTag=document.createElement('a');
+            aTag.setAttribute('class',className)
+            aTag.setAttribute('href',hrefLink)
+            aTag.setAttribute('id',idName)
+            aTag.setAttribute('onclick',clkFun)
+            aTag.innerHTML=text;
+            return aTag;
+        }
+        var div2=document.getElementById('pago');
+        function update_pagination(){
+            div2.innerHTML=``;
+            var ach=createATag('','#','bt0',`pagi(0,1)`,'First');
+            var ach1=createATag('','#','bt0',`pagi(p,pi)`,'Previous');
+            div2.append(ach,ach1);
+            cnt=Math.ceil(100/ +s);    
+            cc=(cc>cnt)?cnt:cc;
+            for(let i=1;i<=cnt;i++){
+                create_pagination(i);
+            }
+            var ach2=createATag('','#','ni',`pagi(n,ni)`,'Next');
+            var ach3=createATag('','#','bt10',`pagi(${cnt*(s-1)},${cnt})`,'Last');
+            div2.append(ach2,ach3);
+        }
+        function create_pagination(n){
+            let a=(n==1&&ni==2)?'active':'';
+            var ach0=createATag(a,'#','bt'+n,`pagi(${start1+ +s},${n})`,n);
+            div2.append(ach0);
+        }
+    </script>
+    
+</body>
+</html>

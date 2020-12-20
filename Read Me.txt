@@ -1,0 +1,1 @@
+Pagination by using XMLHttpRequest and dom manipulation.
